@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/mapType"
+        app:showAsAction="never"
+        android:title="图层" />
+    <item
+        android:title="路况"
+        android:id="@+id/trafficMap"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/heatMap"
+        android:title="热力"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/offline"
+        android:title="离线地图"
+        app:showAsAction="never" />
+
+</menu>

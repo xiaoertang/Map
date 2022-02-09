@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/back_btn_select.xml" value="0.378125" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/bottom_text_normal.xml" value="0.378125" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_main.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_main2.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/customer_menu.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/nav_header.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/text_bubble.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/customer_info.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/customer_login.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/customer_menu.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/driver_info.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/driver_login.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/driver_menu.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/main_login.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/my_location.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/nav_menu.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/route_guide.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/toolbar.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/view_page.xml" value="0.24947916666666667" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8 (2)" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
