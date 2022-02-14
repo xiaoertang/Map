@@ -53,6 +53,7 @@ import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
+import com.example.map.offine.Offline;
 import com.example.map.overlayutil.BikingRouteOverlay;
 import com.example.map.overlayutil.DrivingRouteOverlay;
 import com.example.map.overlayutil.OverlayManager;
@@ -61,10 +62,19 @@ import com.example.map.overlayutil.TransitRouteOverlay;
 import com.example.map.overlayutil.WalkingRouteOverlay;
 
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -82,12 +92,27 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 此demo用来展示如何进行驾车、步行、公交路线搜索并在地图使用RouteOverlay、TransitOverlay绘制
  * 同时展示如何进行节点浏览并弹出泡泡
  */
-public class CustomerMenu extends Activity implements OnMapClickListener, OnGetRoutePlanResultListener,
-		OnClickListener, OnGetSuggestionResultListener, OnGetPoiSearchResultListener, OnItemClickListener {
+public class CustomerMenu extends AppCompatActivity implements OnMapClickListener, OnGetRoutePlanResultListener,
+		OnClickListener, OnGetSuggestionResultListener, OnGetPoiSearchResultListener, OnItemClickListener, SensorEventListener {
+	private SensorManager mSensorManager;
+	private Double lastX = 0.0;
+	private int mCurrentDirection = 0;
+	private double mCurrentLat = 0.0;
+	private double mCurrentLon = 0.0;
+	private float mCurrentAccracy;
 	// 浏览路线节点相关
 	private String localcity;// 记录当前城市
 	Button mBtnPre = null; // 上一个节点
@@ -95,11 +120,11 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 	int nodeIndex = -1; // 节点索引,供浏览节点时使用
 	private Button findroute;// 路线规划
 	private Button findroute2;// 路线规划
-	RouteLine route = null;
-	OverlayManager routeOverlay = null;
+	RouteLine route = null;   //路线
+	OverlayManager routeOverlay = null; //路线叠加
 	private Button requestLocButton;
 	private LocationMode mCurrentMode;
-	private ImageButton my_back;// 返回按钮
+	private Button my_back;// 返回按钮
 	private LinearLayout edit_layout;// 底部目的地栏
 	private LinearLayout choosemode;// 选择导航方式
 	private ListView search_end;// 推荐目的地
@@ -116,7 +141,7 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 	// 如果不处理touch事件，则无需继承，直接使用MapView即可
 	// 地图控件
 	private TextureMapView mMapView = null;
-	private BaiduMap mBaidumap;
+	private BaiduMap mBaiduMap;
 
 	// 搜索相关
 	RoutePlanSearch mSearch = null; // 搜索模块，也可去掉地图模块独立使用
@@ -153,6 +178,10 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 	// 交通图
 	private ImageButton officient;
 	private boolean flag = false;
+	//导航栏
+	private Toolbar toolbar;
+
+	private MyLocationData myLocationData;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -161,11 +190,48 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 		SDKInitializer.initialize(getApplicationContext());
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);// 设置标题栏不可用
 		setContentView(R.layout.customer_menu);
-		// 初始化控件
-		initview();
-		// 初始化地图
-		inintmap();
+		//设置主页导航栏
+		toolbar = findViewById(R.id.toolbar_main);
+		setSupportActionBar(toolbar);
 
+		// 地图初始化
+		mMapView = (TextureMapView) findViewById(R.id.mTexturemap);
+		mBaiduMap = mMapView.getMap();
+		// 获取传感器管理服务
+		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+		mCurrentMode = MyLocationConfiguration.LocationMode.NORMAL;
+		// 为系统的方向传感器注册监听器
+		mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_UI);
+		List<String> permissionList = new ArrayList<String>();
+		if(ContextCompat.checkSelfPermission(CustomerMenu.this,
+				Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+			permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+		}
+		if(ContextCompat.checkSelfPermission(CustomerMenu.this,
+				Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED){
+			permissionList.add(Manifest.permission.READ_PHONE_STATE);
+		}
+		if(ContextCompat.checkSelfPermission(CustomerMenu.this,
+				Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+			permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+		}
+		if(ContextCompat.checkSelfPermission(CustomerMenu.this,
+				Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+			permissionList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+		}
+		if(ContextCompat.checkSelfPermission(CustomerMenu.this,
+				Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED){
+			permissionList.add(Manifest.permission.ACCESS_WIFI_STATE);
+		}
+		if(!permissionList.isEmpty()){
+			String [] permissions = permissionList.toArray(new String[permissionList.size()]);
+			ActivityCompat.requestPermissions(CustomerMenu.this,permissions,1);
+		}else{
+			//初始化定位
+			initMap();
+		}
+		// 初始化控件
+		initView();
 		mCurrentMode = LocationMode.COMPASS;
 		requestLocButton.setText("罗");
 		OnClickListener btnClickListener = new OnClickListener() {
@@ -174,14 +240,14 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 				case NORMAL:
 					requestLocButton.setText("跟");
 					mCurrentMode = LocationMode.FOLLOWING;
-					mBaidumap.setMyLocationConfigeration(
+					mBaiduMap.setMyLocationConfigeration(
 							new MyLocationConfiguration(mCurrentMode, true, mCurrentMarker));
 					hideclickLayout(false);
 					break;
 				case COMPASS:
 					requestLocButton.setText("普");
 					mCurrentMode = LocationMode.NORMAL;
-					mBaidumap.setMyLocationConfigeration(
+					mBaiduMap.setMyLocationConfigeration(
 							new MyLocationConfiguration(mCurrentMode, true, mCurrentMarker));
 
 					locationLayout.startAnimation(slide_in_bottom);
@@ -192,7 +258,7 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 				case FOLLOWING:
 					requestLocButton.setText("罗");
 					mCurrentMode = LocationMode.COMPASS;
-					mBaidumap.setMyLocationConfigeration(
+					mBaiduMap.setMyLocationConfigeration(
 							new MyLocationConfiguration(mCurrentMode, true, mCurrentMarker));
 
 					locationLayout.startAnimation(slide_in_bottom);
@@ -206,16 +272,16 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 			}
 		};
 		requestLocButton.setOnClickListener(btnClickListener);
-		CharSequence titleLable = "路线规划功能";
-		setTitle(titleLable);
+		//CharSequence titleLable = "路线规划功能";
+		//setTitle(titleLable);
 
 		// 地图点击事件处理
-		mBaidumap.setOnMapClickListener(this);
+		mBaiduMap.setOnMapClickListener(this);
 		// 初始化搜索模块，注册事件监听
 		mSearch = RoutePlanSearch.newInstance();
 		mSearch.setOnGetRoutePlanResultListener(this);
 		// 点击地图获取点的坐标
-		mBaidumap.setOnMapClickListener(new OnMapClickListener() {
+		mBaiduMap.setOnMapClickListener(new OnMapClickListener() {
 
 			@Override
 			public void onMapPoiClick(MapPoi arg0) {
@@ -228,7 +294,7 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 				end_edit.setText(arg0.getName());
 				endlocation.setText(arg0.getName());
 				endPt = arg0.getPosition();
-				mBaidumap.clear();
+				mBaiduMap.clear();
 				mydraw(arg0.getPosition(), R.drawable.icon_en);
 
 			}
@@ -242,7 +308,7 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 				findroute.setVisibility(View.GONE);
 				hideclickLayout(true);
 				endPt = Ll;
-				mBaidumap.clear();
+				mBaiduMap.clear();
 				mydraw(endPt, R.drawable.icon_en);
 				// 创建地理编码检索实例
 				geoCoder = GeoCoder.newInstance();
@@ -277,18 +343,80 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 		});
 	}
 
-	// 地图初始化
-	public void inintmap() {
-		// 地图初始化
-		mMapView = (TextureMapView) findViewById(R.id.mTexturemap);
-		mBaidumap = mMapView.getMap();
+	@Override
+	public void onSensorChanged(SensorEvent sensorEvent) {
+		double x = sensorEvent.values[SensorManager.DATA_X];
+		if (Math.abs(x - lastX) > 1.0) {
+			mCurrentDirection = (int) x;
+			myLocationData = new MyLocationData.Builder()
+					.accuracy(mCurrentAccracy)// 设置定位数据的精度信息，单位：米
+					.direction(mCurrentDirection)// 此处设置开发者获取到的方向信息，顺时针0-360
+					.latitude(mCurrentLat)
+					.longitude(mCurrentLon)
+					.build();
+			mBaiduMap.setMyLocationData(myLocationData);
+		}
+		lastX = x;
+	}
 
-		// 不显示缩放比例尺
-		mMapView.showZoomControls(false);
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int i) {
+
+	}
+	//菜单
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.toolbar, menu);
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.offline://离线下载
+				Intent intent1 = new Intent(CustomerMenu.this, Offline.class);
+				startActivity(intent1);
+				break;
+			case R.id.mapType:
+				//地图显示类型（普通、卫星）
+				if (mBaiduMap.getMapType() == BaiduMap.MAP_TYPE_NORMAL) {
+					mBaiduMap.setMapType(BaiduMap.MAP_TYPE_SATELLITE);
+					MyToast("开启卫星图层");
+
+				} else if (mBaiduMap.getMapType() == BaiduMap.MAP_TYPE_SATELLITE) {
+					mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+					MyToast("关闭文星图层");
+				}
+				break;
+			case R.id.trafficMap:
+				if (!mBaiduMap.isTrafficEnabled()) {
+					mBaiduMap.setTrafficEnabled(true);
+					MyToast("开启路况图");
+				} else {
+					mBaiduMap.setTrafficEnabled(false);
+					MyToast("关闭路况图");
+				}
+				break;
+			case R.id.heatMap: {
+				if (!mBaiduMap.isBaiduHeatMapEnabled()) {
+					//开启热力图
+					mBaiduMap.setBaiduHeatMapEnabled(true);
+					MyToast("开启热力图");
+				} else {
+					//关闭热力图
+					mBaiduMap.setBaiduHeatMapEnabled(false);
+					MyToast("关闭热力图");
+				}
+			}
+			default:
+		}
+		return true;
+	}
+	// 地图初始化
+	public void initMap() {
+
 		// 不显示百度地图Logo
 		mMapView.removeViewAt(1);
 		// 开启定位图层
-		mBaidumap.setMyLocationEnabled(true);
+		mBaiduMap.setMyLocationEnabled(true);
 		// 定位初始化
 		mLocClient = new LocationClient(this);
 		mLocClient.registerLocationListener(myListener);
@@ -304,12 +432,12 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 		mLocClient.start();// 启动sdk
 	}
 
-	public void initview() {
+	public void initView() {
 
 		start_edit = (EditText) findViewById(R.id.start);
 		end_edit = (EditText) findViewById(R.id.end);
 		customer_city = (TextView) findViewById(R.id.customer_city);
-		my_back = (ImageButton) findViewById(R.id.my_back);
+		my_back = (Button) findViewById(R.id.my_back);
 		mylocation = (TextView) findViewById(R.id.mylocation);
 		requestLocButton = (Button) findViewById(R.id.change);
 		findroute = (Button) findViewById(R.id.findroute);
@@ -425,7 +553,7 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 		TextView walk = (TextView) findViewById(R.id.go_walk);
 		// 重置浏览节点的路线数据
 		route = null;
-		mBaidumap.clear();
+		mBaiduMap.clear();
 		// 设置起终点信息，对于tranist search 来说，城市名无意义
 		PlanNode stNode = PlanNode.withCityNameAndPlaceName(localcity, start_edit.getText().toString());
 		PlanNode enNode = PlanNode.withCityNameAndPlaceName(localcity, end_edit.getText().toString());
@@ -475,6 +603,7 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 			mSearch.walkingSearch(new WalkingRoutePlanOption().from(startPlanNode).to(endPlanNode));
 			hideall();
 			showguide();
+			my_back.setVisibility(View.VISIBLE);
 			search_end.setVisibility(View.GONE);
 			edit_layout.setVisibility(View.GONE);
 			choosemode.setVisibility(View.VISIBLE);
@@ -515,9 +644,9 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 		if (result.error == SearchResult.ERRORNO.NO_ERROR) {
 			nodeIndex = -1;
 			route = result.getRouteLines().get(0);
-			WalkingRouteOverlay overlay = new WalkingRouteOverlay(mBaidumap);
+			WalkingRouteOverlay overlay = new WalkingRouteOverlay(mBaiduMap);
 			routeOverlay = overlay;
-			mBaidumap.setOnMarkerClickListener(overlay);
+			mBaiduMap.setOnMarkerClickListener(overlay);
 			overlay.setData(result.getRouteLines().get(0));
 			overlay.addToMap();
 			overlay.zoomToSpan();
@@ -544,8 +673,8 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 		if (result.error == SearchResult.ERRORNO.NO_ERROR) {
 			nodeIndex = -1;
 			route = result.getRouteLines().get(0);
-			TransitRouteOverlay overlay = new TransitRouteOverlay(mBaidumap);
-			mBaidumap.setOnMarkerClickListener(overlay);
+			TransitRouteOverlay overlay = new TransitRouteOverlay(mBaiduMap);
+			mBaiduMap.setOnMarkerClickListener(overlay);
 			routeOverlay = overlay;
 			// 设置路线数据
 			overlay.setData(result.getRouteLines().get(0));
@@ -579,9 +708,9 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 		if (result.error == SearchResult.ERRORNO.NO_ERROR) {
 			nodeIndex = -1;
 			route = result.getRouteLines().get(0);
-			DrivingRouteOverlay overlay = new MyDrivingRouteOverlay(mBaidumap);
+			DrivingRouteOverlay overlay = new MyDrivingRouteOverlay(mBaiduMap);
 			routeOverlay = overlay;
-			mBaidumap.setOnMarkerClickListener(overlay);
+			mBaiduMap.setOnMarkerClickListener(overlay);
 			overlay.setData(result.getRouteLines().get(0));
 			overlay.addToMap();
 			overlay.zoomToSpan();
@@ -613,9 +742,9 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 		if (result.error == SearchResult.ERRORNO.NO_ERROR) {
 			nodeIndex = -1;
 			route = result.getRouteLines().get(0);
-			BikingRouteOverlay overlay = new BikingRouteOverlay(mBaidumap);
+			BikingRouteOverlay overlay = new BikingRouteOverlay(mBaiduMap);
 			routeOverlay = overlay;
-			mBaidumap.setOnMarkerClickListener(overlay);
+			mBaiduMap.setOnMarkerClickListener(overlay);
 			overlay.setData(result.getRouteLines().get(0));
 			overlay.addToMap();
 			overlay.zoomToSpan();
@@ -648,7 +777,7 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 
 	@Override
 	public void onMapClick(LatLng point) {
-		mBaidumap.hideInfoWindow();
+		mBaiduMap.hideInfoWindow();
 	}
 
 	@Override
@@ -690,18 +819,21 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 			if (location == null || mMapView == null) {
 				return;
 			}
+			mCurrentLat = location.getLatitude();
+			mCurrentLon = location.getLongitude();
+			mCurrentAccracy = location.getRadius();
 			String locationDescribe = location.getLocationDescribe(); // 获取位置描述信息
 			String startLocation = locationDescribe.substring(1);
-			MyLocationData locData = new MyLocationData.Builder().accuracy(location.getRadius())
+			 myLocationData = new MyLocationData.Builder().accuracy(location.getRadius())
 					// 此处设置开发者获取到的方向信息，顺时针0-360
-					.direction(100).latitude(location.getLatitude()).longitude(location.getLongitude()).build();
-			mBaidumap.setMyLocationData(locData);
+					.direction(100).latitude(mCurrentLat).longitude(mCurrentLon).build();
+			mBaiduMap.setMyLocationData(myLocationData);
 			if (isFirstLoc) {
 				isFirstLoc = false;
 				currentPt = new LatLng(location.getLatitude(), location.getLongitude());
 				MapStatus.Builder builder = new MapStatus.Builder();
 				builder.target(currentPt).zoom(17.5f);
-				mBaidumap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+				mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
 				start_edit.setText(startLocation);
 				MyToast("当前所在位置：" + locationDescribe);
 				mylocation.setText(locationDescribe);
@@ -730,9 +862,9 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 			return;
 		}
 		if (result.error == SearchResult.ERRORNO.NO_ERROR) {
-			mBaidumap.clear();
-			PoiOverlay overlay = new MyPoiOverlay(mBaidumap);
-			mBaidumap.setOnMarkerClickListener(overlay);
+			mBaiduMap.clear();
+			PoiOverlay overlay = new MyPoiOverlay(mBaiduMap);
+			mBaiduMap.setOnMarkerClickListener(overlay);
 			overlay.setData(result);
 			overlay.addToMap();
 			overlay.zoomToSpan();
@@ -820,7 +952,7 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 		OverlayOptions option = new MarkerOptions().position(location).icon(bitmap);
 
 		// 在地图上添加Marker，并显示
-		mBaidumap.addOverlay(option);
+		mBaiduMap.addOverlay(option);
 	}
 
 	// 点击事件
@@ -836,6 +968,7 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 			poilayout.setVisibility(View.GONE);
 			break;
 		case R.id.findroute2:
+
 			locationLayout.setVisibility(View.GONE);
 			poilayout.setVisibility(View.GONE);
 			findroute.setVisibility(View.GONE);
@@ -860,15 +993,16 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 			guide_layout.setVisibility(View.GONE);
 			locationLayout.setVisibility(View.GONE);
 			click_layout.setVisibility(View.GONE);
+
 			break;
 		case R.id.officient:
 			// 交通图
 			if (flag) {
-				mBaidumap.setTrafficEnabled(true);
+				mBaiduMap.setTrafficEnabled(true);
 				MyToast("打开交通图");
 				flag = false;
 			} else {
-				mBaidumap.setTrafficEnabled(false);
+				mBaiduMap.setTrafficEnabled(false);
 				flag = true;
 				MyToast("关闭交通图");
 			}
@@ -888,6 +1022,7 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 	}
 
 	private void showguide() {
+		my_back.setVisibility(View.VISIBLE);
 		if (guide_layout.getVisibility() == View.GONE) {
 			guide_layout.setVisibility(View.VISIBLE);
 			guide_layout.startAnimation(slide_in_above);
@@ -900,7 +1035,8 @@ public class CustomerMenu extends Activity implements OnMapClickListener, OnGetR
 	}
 
 	private void hideguide() {
-		mBaidumap.clear();
+		my_back.setVisibility(View.GONE);
+		mBaiduMap.clear();
 		if (edit_layout.getVisibility() == View.VISIBLE) {
 			edit_layout.setVisibility(View.GONE);
 			edit_layout.startAnimation(slide_out_above);

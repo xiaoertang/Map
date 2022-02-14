@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="5dp" >
+        android:padding="5dp">
 
         <ImageButton
             android:id="@+id/driver_inf"
@@ -90,17 +90,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/rectangle_radius_fen"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="起点····终点"
             android:textSize="16sp"
@@ -112,7 +112,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="7dp"
             android:background="@drawable/creat_normal_edittext"
-            android:drawableLeft="@drawable/radio_red"
+            android:drawableLeft="@drawable/radio_blue"
             android:drawablePadding="5dp"
             android:textColor="#303030"
             android:textSize="15dp" />
@@ -123,18 +123,17 @@
             android:layout_height="wrap_content"
             android:layout_margin="7dp"
             android:background="@drawable/creat_normal_edittext"
-            android:drawableLeft="@drawable/radio_blue"
+            android:drawableLeft="@drawable/radio_red"
             android:drawablePadding="5dp"
             android:hint="您要去哪儿"
-            android:textSize="15dp"
-            />
+            android:textSize="15dp" />
 
         <Button
             android:id="@+id/driver_go"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:background="@drawable/transparent_mask"
             android:gravity="center"
             android:onClick="searchButtonProcess"

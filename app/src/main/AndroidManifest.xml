@@ -14,21 +14,22 @@
 
     <application
         android:name=".DemoApplication"
-        android:label="Map"
+        android:label=""
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyGuide">
-<!--        <activity android:name=".Main2Activity"/>-->
-        <activity android:name=".CustomerMenu"></activity>
+
+        <activity android:name=".Main2Activity"/>
+<!--        <activity android:name=".CustomerMenu"/>-->
+        <activity android:name=".offine.Offline" />
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="38Aj5PdPWjStqa2ECSKuvMknk0P0SUHK"></meta-data>
 
-        <activity android:name=".MainActivity" android:launchMode="singleTask">
+        <activity android:name=".CustomerMenu" android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

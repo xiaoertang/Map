@@ -108,6 +108,7 @@ public class Main2Activity extends Activity implements BaiduMap.OnMapClickListen
     LocationClient mLocClient;
     public MyLocationListenner myListener = new MyLocationListenner();
 
+    //private Button my_back;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 在使用SDK各组件之前初始化context信息，传入ApplicationContext
@@ -183,6 +184,8 @@ public class Main2Activity extends Activity implements BaiduMap.OnMapClickListen
     }
 
     public void initview() {
+//        my_back = findViewById(R.id.my_back);
+//        my_back.setVisibility(View.VISIBLE);
         mBtnPre = (Button) findViewById(R.id.driver_pre);
         mBtnNext = (Button) findViewById(R.id.driver_next);
         mBtnPre.setVisibility(View.INVISIBLE);
@@ -302,7 +305,7 @@ public class Main2Activity extends Activity implements BaiduMap.OnMapClickListen
         }
         if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
             // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
-            // result.getSuggestAddrInfo()
+            //result.getSuggestAddrInfo()
             return;
         }
         if (result.error == SearchResult.ERRORNO.NO_ERROR) {

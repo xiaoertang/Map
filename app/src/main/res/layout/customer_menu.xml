@@ -2,7 +2,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
 
     <com.baidu.mapapi.map.TextureMapView
         android:id="@+id/mTexturemap"
@@ -14,33 +16,57 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
-
-        <!-- 顶部导航栏 -->
-
-        <RelativeLayout
-            android:id="@+id/customer_a_layout"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_main"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FCFCFC"
-            android:padding="5dp" >
-
-            <ImageButton
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:menu="@menu/toolbar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+            <Button
                 android:id="@+id/my_back"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_marginLeft="5dip"
-                android:layout_marginTop="5dip"
-                android:background="@drawable/customer_back"
-                android:src="@drawable/transparent_mask" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="返回"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/customer_city"
-                style="@style/customer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="导航"/>
-        </RelativeLayout>
+                android:text="导航"
+                android:layout_gravity="center"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+        </androidx.appcompat.widget.Toolbar>
+<!--        &lt;!&ndash; 顶部导航栏 &ndash;&gt;-->
+
+<!--        <RelativeLayout-->
+<!--            android:id="@+id/customer_a_layout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="#FCFCFC"-->
+<!--            android:padding="5dp" >-->
+
+<!--            <ImageButton-->
+<!--                android:id="@+id/my_back"-->
+<!--                android:layout_width="25dp"-->
+<!--                android:layout_height="25dp"-->
+<!--                android:layout_marginLeft="5dip"-->
+<!--                android:layout_marginTop="5dip"-->
+<!--                android:background="@drawable/customer_back"-->
+<!--                android:src="@drawable/transparent_mask" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/customer_city"-->
+<!--                style="@style/customer"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_centerHorizontal="true"-->
+<!--                android:text="导航"/>-->
+<!--        </RelativeLayout>-->
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -216,8 +242,8 @@
 
             <Button
                 android:id="@+id/change"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_below="@id/poilayout"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="25dp"
@@ -239,30 +265,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="5dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
+                android:layout_marginBottom="5dp"
                 android:background="@drawable/rectangle_radius_fen"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <Button
                     android:id="@+id/findroute2"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/findroute_select"
                     android:text="出发"
                     android:textColor="#F2F2F2"
-                    android:textSize="14sp" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/mylocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:text="位置"
                     android:textSize="16sp"
                     android:textStyle="bold" />
