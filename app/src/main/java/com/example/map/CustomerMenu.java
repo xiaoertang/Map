@@ -136,7 +136,7 @@ public class CustomerMenu extends AppCompatActivity implements OnMapClickListene
 	private TextView mylocation;
 	private EditText start_edit, end_edit;
 	boolean isFirstLoc = true; // 是否首次定位
-
+	private Button my_login; //登录
 	// 地图相关，使用继承MapView的MyRouteMapView目的是重写touch事件实现泡泡处理
 	// 如果不处理touch事件，则无需继承，直接使用MapView即可
 	// 地图控件
@@ -183,6 +183,7 @@ public class CustomerMenu extends AppCompatActivity implements OnMapClickListene
 
 	private MyLocationData myLocationData;
 
+
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// 在使用SDK各组件之前初始化context信息，传入ApplicationContext
@@ -190,6 +191,7 @@ public class CustomerMenu extends AppCompatActivity implements OnMapClickListene
 		SDKInitializer.initialize(getApplicationContext());
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);// 设置标题栏不可用
 		setContentView(R.layout.customer_menu);
+
 		//设置主页导航栏
 		toolbar = findViewById(R.id.toolbar_main);
 		setSupportActionBar(toolbar);
@@ -433,7 +435,7 @@ public class CustomerMenu extends AppCompatActivity implements OnMapClickListene
 	}
 
 	public void initView() {
-
+		my_login = (Button) findViewById(R.id.my_login);
 		start_edit = (EditText) findViewById(R.id.start);
 		end_edit = (EditText) findViewById(R.id.end);
 		customer_city = (TextView) findViewById(R.id.customer_city);
@@ -454,7 +456,7 @@ public class CustomerMenu extends AppCompatActivity implements OnMapClickListene
 		// 地图点击事件
 		click_layout = (LinearLayout) findViewById(R.id.click_layout);
 		endlocation = (TextView) findViewById(R.id.endlocation);
-
+		my_login.setOnClickListener(this);
 		my_back.setOnClickListener(this);
 		findroute.setOnClickListener(this);
 		findroute2.setOnClickListener(this);
@@ -1006,6 +1008,9 @@ public class CustomerMenu extends AppCompatActivity implements OnMapClickListene
 				flag = true;
 				MyToast("关闭交通图");
 			}
+			case R.id.my_login:
+				Intent login = new Intent(CustomerMenu.this,login.class);
+				startActivity(login);
 		}
 	}
 

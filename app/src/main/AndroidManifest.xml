@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.map">
+    package="com.example.map" >
 
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" /> <!-- 这个权限用于进行网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 这个权限用于访问GPS定位 -->
@@ -11,25 +11,36 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 写入扩展存储，向扩展卡写入数据，用于写入离线定位数据 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 访问网络，网络定位需要上网 -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--
+         android:name=".DemoApplication"-->
 
     <application
-        android:name=".DemoApplication"
+        tools:replace="android:label"
+        android:name="org.litepal.LitePalApplication"
         android:label=""
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MyGuide">
-
-        <activity android:name=".Main2Activity"/>
-<!--        <activity android:name=".CustomerMenu"/>-->
-        <activity android:name=".offine.Offline" />
-
+        android:theme="@style/Theme.MyGuide" >
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="38Aj5PdPWjStqa2ECSKuvMknk0P0SUHK"></meta-data>
+            android:value="38Aj5PdPWjStqa2ECSKuvMknk0P0SUHK" />
 
-        <activity android:name=".CustomerMenu" android:launchMode="singleTask">
+        <activity
+            android:name=".register"
+            android:exported="false" />
+        <activity
+            android:name=".login"
+            android:exported="false" />
+        <activity android:name=".Main2Activity" />
+        <activity android:name=".offine.Offline" />
+
+
+        <activity
+            android:name=".CustomerMenu"
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

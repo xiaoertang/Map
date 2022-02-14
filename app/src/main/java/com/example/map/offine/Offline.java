@@ -23,6 +23,7 @@ import com.baidu.mapapi.map.offline.MKOLSearchRecord;
 import com.baidu.mapapi.map.offline.MKOLUpdateElement;
 import com.baidu.mapapi.map.offline.MKOfflineMap;
 import com.baidu.mapapi.map.offline.MKOfflineMapListener;
+import com.example.map.CustomerMenu;
 import com.example.map.R;
 
 
@@ -321,7 +322,7 @@ public class Offline extends AppCompatActivity implements MKOfflineMapListener {
                     intent.putExtra("x", e.geoPt.longitude);
                     intent.putExtra("y", e.geoPt.latitude);
                     intent.putExtra("level", 13.0f);
-                    intent.setClass(Offline.this, MainActivity.class);
+                    intent.setClass(Offline.this, CustomerMenu.class);
                     startActivity(intent);
                 }
             });
