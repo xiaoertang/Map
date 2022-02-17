@@ -68,7 +68,7 @@ public abstract class OverlayManager implements OnMarkerClickListener, OnPolylin
         removeFromMap();
         List<OverlayOptions> overlayOptions = getOverlayOptions();
         if (overlayOptions != null) {
-            mOverlayOptionList.addAll(getOverlayOptions());
+            mOverlayOptionList.addAll(overlayOptions);
         }
 
         for (OverlayOptions option : mOverlayOptionList) {

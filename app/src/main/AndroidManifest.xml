@@ -31,7 +31,6 @@
         <activity
             android:name=".login"
             android:exported="false" />
-        <activity android:name=".Main2Activity" />
         <activity android:name=".offine.Offline" />
 
 

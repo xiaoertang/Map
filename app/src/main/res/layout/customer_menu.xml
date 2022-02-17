@@ -78,19 +78,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <Button
-                android:id="@+id/findroute"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="15dp"
-                android:background="@drawable/findroute_select"
-                android:padding="5dp"
-                android:text="出发"
-                android:textColor="#F2F2F2"
-                android:textSize="14sp"
-                android:visibility="gone" />
+<!--            <Button-->
+<!--                android:id="@+id/findroute"-->
+<!--                android:layout_width="60dp"-->
+<!--                android:layout_height="60dp"-->
+<!--                android:layout_alignParentBottom="true"-->
+<!--                android:layout_centerHorizontal="true"-->
+<!--                android:layout_marginBottom="15dp"-->
+<!--                android:background="@drawable/findroute_select"-->
+<!--                android:padding="5dp"-->
+<!--                android:text="出发"-->
+<!--                android:textColor="#F2F2F2"-->
+<!--                android:textSize="14sp"-->
+<!--                android:visibility="" />-->
 
             <!-- 起点终点输入 -->
 
@@ -224,13 +224,13 @@
 
                 <AutoCompleteTextView
                     android:id="@+id/searchpoi"
-                    android:layout_width="match_parent"
+                    android:layout_width="348dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="7dp"
                     android:layout_weight="5"
                     android:background="@drawable/rectangle_radius_fen"
-                    android:drawablePadding="5dp"
                     android:drawableStart="@drawable/radio_blue"
+                    android:drawablePadding="5dp"
                     android:hint="搜索周边"
                     android:maxLines="1"
                     android:textSize="15sp" />
@@ -279,12 +279,23 @@
 
                 <Button
                     android:id="@+id/findroute2"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/findroute_select"
-                    android:text="出发"
+                    android:text="路线"
+                    android:textColor="#F2F2F2"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/findroute3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/findroute_select"
+                    android:text="导航"
                     android:textColor="#F2F2F2"
                     android:textSize="12sp" />
 
