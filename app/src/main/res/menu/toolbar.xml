@@ -14,8 +14,8 @@
         android:title="热力"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/offline"
-        android:title="离线地图"
-        app:showAsAction="never" />
+        android:id="@+id/favorites"
+        android:title="收藏夹"
+        app:showAsAction="never"/>
 
 </menu>

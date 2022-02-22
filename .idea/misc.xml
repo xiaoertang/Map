@@ -8,6 +8,9 @@
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/bottom_text_normal.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/bottom_text_press.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/bottom_text_select.xml" value="0.378125" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/btn_selector.xml" value="0.378125" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/btn_selector_focused.xml" value="0.378125" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/btn_selector_normal.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/creat_normal_edittext.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/findroute_normal.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/findroute_press.xml" value="0.378125" />
@@ -18,14 +21,20 @@
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/ic_launcher_background.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/login_background_div.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/luopan_normal.xml" value="0.378125" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/my_checkbox.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/title_text_press.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/transparent_mask.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/transtmode_select.xml" value="0.378125" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_favorite.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_favorite_alert.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_favorite_infowindow.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_login.xml" value="0.34739583333333335" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_main.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_main2.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_my.xml" value="0.33" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_offline.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_regist.xml" value="0.34739583333333335" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_update.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_user.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/customer_menu.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/drawer_layout.xml" value="0.3619791666666667" />
