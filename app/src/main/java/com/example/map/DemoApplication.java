@@ -6,6 +6,7 @@ import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.SDKInitializer;
 
 public class DemoApplication extends Application {
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -15,4 +16,5 @@ public class DemoApplication extends Application {
         //包括BD09LL和GCJ02两种坐标，默认是BD09LL坐标。
         SDKInitializer.setCoordType(CoordType.BD09LL);
     }
+
 }

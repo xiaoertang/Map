@@ -12,4 +12,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="dkgray">#FF444444</color>
     <color name="ed_node">#FF2143</color>
+    <color name="nsdk_cl_bg_d_mm">#dddddd</color>
+    <color name="nsdk_route_sort_setting_default">#3385ff</color>
+    <color name="nsdk_route_sort_item_text">#333333</color>
 </resources>

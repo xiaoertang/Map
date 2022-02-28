@@ -25,6 +25,10 @@
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/title_text_press.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/transparent_mask.xml" value="0.378125" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/drawable/transtmode_select.xml" value="0.378125" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_analog.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_cruiser.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_demo_fragment.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_driving.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_favorite.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_favorite_alert.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_favorite_infowindow.xml" value="0.3619791666666667" />
@@ -32,12 +36,27 @@
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_main.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_main2.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_my.xml" value="0.33" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_navi.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_node.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_offline.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_regist.xml" value="0.34739583333333335" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_setting.xml" value="0.2722222222222222" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_suggestion_item.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_update.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/activity_user.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/control_itemview.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/controlwindow.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/customer_menu.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/dialog_node.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/dialog_pop_prefer.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/drawer_layout.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/fragment_route_result.xml" value="0.1" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/guidepopview.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/item_cameratype.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/item_prefer.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/item_route_detail.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/item_route_result_tab.xml" value="0.3619791666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/mapview_addview.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/nav_header.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/offline_localmap_list.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/layout/text_bubble.xml" value="0.24947916666666667" />
@@ -47,12 +66,14 @@
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/driver_info.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/driver_login.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/driver_menu.xml" value="0.24947916666666667" />
+        <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/main.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/main_login.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/my_location.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/nav_menu.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/route_guide.xml" value="0.24947916666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/toolbar.xml" value="0.3619791666666667" />
         <entry key="..\:/SDK-Map/Android-SDK-Map-master/app/src/main/res/menu/view_page.xml" value="0.24947916666666667" />
+        <entry key="..\:/androidSDK/platforms/android-29/data/res/layout/simple_dropdown_item_1line.xml" value="0.24947916666666667" />
       </map>
     </option>
   </component>
