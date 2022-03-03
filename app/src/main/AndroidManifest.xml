@@ -10,7 +10,14 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 用于读取手机当前的状态 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 写入扩展存储，向扩展卡写入数据，用于写入离线定位数据 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 访问网络，网络定位需要上网 -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" /><!--访问网络，用于SDK鉴权、算路导航-->
+    <uses-permission android:name="android.permission.VIBRATE"/><!-- 获取访问手机振动器权限，用于导航过程中的震动提示 -->
+    <!--获取Wi-Fi状态，避免产生不必要的网络请求 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 用于ugc事件上报拍照录像 -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <!-- 用于ugc事件上报录音 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <!-- OpenGLES 2.0 -->
     <uses-feature

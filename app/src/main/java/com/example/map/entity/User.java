@@ -1,16 +1,11 @@
 package com.example.map.entity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
-
 import org.litepal.crud.DataSupport;
 
 public class User extends DataSupport {
     private String name; //用户名
     private String password; //密码
     private String status; //用户状态：0未登录，1已登录
-
     private String phone; //手机号
 
     public String getStatus() {

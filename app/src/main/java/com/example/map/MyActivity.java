@@ -1,13 +1,12 @@
 package com.example.map;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.map.entity.User;
 import com.example.map.offine.Offline;
@@ -19,6 +18,7 @@ import java.util.List;
 
 public class MyActivity extends AppCompatActivity implements View.OnClickListener {
     private Button offine; //离线地图
+    private Button favorites;
     private Button updatePass; //修改密码
     private Button quit; //退出
     private Button del;//注销
@@ -40,11 +40,12 @@ public class MyActivity extends AppCompatActivity implements View.OnClickListene
             //user = users.get(0);
             name.setText(users.get(0).getName());
         }
-
+        favorites = findViewById(R.id.favorites);
         offine = findViewById(R.id.offline);
         updatePass = findViewById(R.id.update_pass);
         quit = findViewById(R.id.quit);
         del = findViewById(R.id.del);
+        favorites.setOnClickListener(this);
         offine.setOnClickListener(this);
         updatePass.setOnClickListener(this);
         quit.setOnClickListener(this);
@@ -81,6 +82,10 @@ public class MyActivity extends AppCompatActivity implements View.OnClickListene
                 break;
             case R.id.del:
                 DataSupport.deleteAll(User.class, "status = ?", "1");
+                break;
+            case R.id.favorites:
+                Intent favorite = new Intent(MyActivity.this, Favorite.class);
+                startActivity(favorite);
                 break;
         }
     }

@@ -13,9 +13,5 @@
         android:id="@+id/heatMap"
         android:title="热力"
         app:showAsAction="never"/>
-    <item
-        android:id="@+id/favorites"
-        android:title="收藏夹"
-        app:showAsAction="never"/>
 
 </menu>
