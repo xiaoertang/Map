@@ -18,7 +18,8 @@
     <uses-permission android:name="android.permission.CAMERA"/>
     <!-- 用于ugc事件上报录音 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-
+    <!-- 用于AR步行导航，需要使用相机权限，如果不需要AR歩导，则不需申请该权限 -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <!-- OpenGLES 2.0 -->
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -64,8 +65,21 @@
             android:name=".offine.Offline"
             android:exported="false" />
         <activity
+            android:name=".liteapp.activity.DemoGuideActivity"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
+            android:label="@string/title_route_guide_demo"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name=".BNaviGuideActivity" />
+        <activity
+            android:name=".WNaviGuideActivity" />
+        <activity
             android:name=".Favorite"
             android:exported="false" />
+        <service android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote"/>
     </application>
 
 </manifest>

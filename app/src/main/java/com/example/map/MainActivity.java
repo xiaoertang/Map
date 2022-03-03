@@ -1,6 +1,7 @@
 package com.example.map;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -48,6 +49,7 @@ import com.baidu.mapapi.bikenavi.adapter.IBEngineInitListener;
 import com.baidu.mapapi.bikenavi.adapter.IBRoutePlanListener;
 import com.baidu.mapapi.bikenavi.model.BikeRoutePlanError;
 import com.baidu.mapapi.bikenavi.params.BikeNaviLaunchParam;
+import com.baidu.mapapi.bikenavi.params.BikeRouteNodeInfo;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BaiduMap.OnMapClickListener;
 import com.baidu.mapapi.map.BitmapDescriptor;
@@ -97,12 +99,12 @@ import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
-import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.mapapi.walknavi.WalkNavigateHelper;
 import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
 import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener;
 import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
 import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
+import com.baidu.mapapi.walknavi.params.WalkRouteNodeInfo;
 import com.baidu.navisdk.adapter.BNRoutePlanNode;
 import com.baidu.navisdk.adapter.BaiduNaviManagerFactory;
 import com.baidu.navisdk.adapter.IBNRoutePlanManager;
@@ -110,6 +112,8 @@ import com.baidu.navisdk.adapter.IBNTTSManager;
 import com.baidu.navisdk.adapter.IBaiduNaviManager;
 import com.baidu.navisdk.adapter.struct.BNTTsInitConfig;
 import com.example.map.entity.User;
+import com.example.map.liteapp.BNDemoUtils;
+import com.example.map.liteapp.activity.DemoGuideActivity;
 import com.example.map.overlayutil.BikingRouteOverlay;
 import com.example.map.overlayutil.DrivingRouteOverlay;
 import com.example.map.overlayutil.OverlayManager;
@@ -134,8 +138,9 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
     private BikeNaviLaunchParam bikeParam;
     private WalkNaviLaunchParam walkParam;
     private static boolean isPermissionRequested = false;
-    //private LatLng endPt;
 
+    private double latitude = 0.0;
+    private double longitude = 0.0;
     private SensorManager mSensorManager;
     private Double lastX = 0.0;
     private int mCurrentDirection = 0;
@@ -145,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
     private double endLat = 0.0;
     private double endLon = 0.0;
     //两地之间的距离
-    private double distance;
+//    private double distance;
     // 浏览路线节点相关
     private String localcity;// 记录当前城市
     Button mBtnPre = null; // 上一个节点
@@ -165,8 +170,8 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
     private LinearLayout guide_layout; //起点-终点搜索框
     private LinearLayout locationLayout;// 定位框
     private LinearLayout detailed;//详细说明
-    private TextView needDistance;//距离
-    private TextView needTime;//需要时间
+    //    private TextView needDistance;//距离
+//    private TextView needTime;//需要时间
     BitmapDescriptor mCurrentMarker;
     boolean useDefaultIcon = false;
     private TextView popupText = null, customer_city; // 泡泡view
@@ -227,6 +232,8 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
 
     private MyLocationData myLocationData;
 
+    private BroadcastReceiver mReceiver;
+    private int mPageType = BNDemoUtils.NORMAL;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -304,7 +311,6 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
         mSearch.setOnGetRoutePlanResultListener(this);
         // 点击地图获取点的坐标
         mBaiduMap.setOnMapClickListener(this);
-
         //导航初始化
         File sdDir = null;
         boolean sdCardExist = Environment.getExternalStorageState()
@@ -319,13 +325,13 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                         if (i == 0) {
 //                            Toast.makeText(MainActivity.this, "key校验成功!", Toast.LENGTH_SHORT).show();
                         } else if (i == 1) {
-                            Toast.makeText(MainActivity.this, "key校验失败, " + s, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(MainActivity.this, "key校验失败, " + s, Toast.LENGTH_SHORT).show();
                         }
                         MainActivity.this.runOnUiThread(new Runnable() {
 
                             @Override
                             public void run() {
-                                Toast.makeText(MainActivity.this, "authinfo", Toast.LENGTH_LONG).show();
+                                //Toast.makeText(MainActivity.this, "authinfo", Toast.LENGTH_LONG).show();
                             }
                         });
                     }
@@ -349,7 +355,6 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
 
                     }
                 });
-
     }
 
     @Override
@@ -416,8 +421,6 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 mSearch.drivingSearch((new DrivingRoutePlanOption()).from(stNode).to(enNode));
                 hideguide();
                 showDetailed();
-                needDistance.setText("距离：" + distance / 1000 + " 公里");
-                needTime.setText("大约需要：" + Math.round((distance / 1000) / 25 * 60) + " 分钟");
                 my_back.setVisibility(View.VISIBLE);
                 my_login.setVisibility(View.GONE);
                 break;
@@ -428,8 +431,6 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 driver.setSelected(false);
                 mSearch.transitSearch((new TransitRoutePlanOption()).from(stNode).city(localcity).to(enNode));
                 hideguide();
-                needDistance.setText("距离：" + distance / 1000 + " 公里");
-                needTime.setText("大约需要：" + Math.round((distance / 1000) / 20 * 60) + " 分钟");
                 my_back.setVisibility(View.VISIBLE);
                 my_login.setVisibility(View.GONE);
                 break;
@@ -439,10 +440,8 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 bike.setSelected(true);
                 walk.setSelected(false);
                 driver.setSelected(false);
-                mSearch.bikingSearch((new BikingRoutePlanOption()).from(stNode).to(enNode));
+                mSearch.bikingSearch((new BikingRoutePlanOption()).from(stNode).to(enNode).ridingType(1));
                 hideguide();
-                needDistance.setText("距离：" + distance / 1000 + " 公里");
-                needTime.setText("大约需要：" + Math.round((distance / 1000) / 15 * 60) + " 分钟");
                 my_back.setVisibility(View.VISIBLE);
                 my_login.setVisibility(View.GONE);
                 showDetailed();
@@ -454,9 +453,6 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 walk.setSelected(true);
                 driver.setSelected(false);
                 mSearch.walkingSearch((new WalkingRoutePlanOption().from(stNode)).to(enNode));
-                needDistance.setText("距离：" + distance / 1000 + " 公里");
-
-                needTime.setText("大约需要：" + Math.round((distance / 1000) / 10 * 60) + " 分钟");
                 hideguide();
                 showDetailed();
                 my_login.setVisibility(View.GONE);
@@ -469,16 +465,15 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 bike.setSelected(false);
                 walk.setSelected(true);
                 driver.setSelected(false);
+//                endPt = new LatLng(latitude,longitude);
                 PlanNode startPlanNode = PlanNode.withLocation(currentPt); // lat long
                 PlanNode endPlanNode = PlanNode.withLocation(endPt);
-
                 mSearch.walkingSearch(new WalkingRoutePlanOption().from(startPlanNode).to(endPlanNode));
-                distance = DistanceUtil.getDistance(currentPt, endPt);
-                needDistance.setText("距离：" + Math.round(distance) + " 米");
-                needTime.setText("大约需要：" + Math.round(distance / 60) + " 分钟");
+//
                 showDetailed();
                 hideall();
                 showguide();
+                end_edit.setText("");
                 my_back.setVisibility(View.VISIBLE);
                 search_end.setVisibility(View.GONE);
                 edit_layout.setVisibility(View.GONE);
@@ -487,6 +482,44 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 break;
         }
 
+    }
+
+    private void initTTs() {
+        File sdDir = null;
+        boolean sdCardExist = Environment.getExternalStorageState()
+                .equals(android.os.Environment.MEDIA_MOUNTED);//判断sd卡是否存在
+        if (sdCardExist) {
+            sdDir = Environment.getExternalStorageDirectory();//获取跟目录
+        }
+        BNTTsInitConfig builder = new BNTTsInitConfig.Builder()
+                .context(getApplicationContext())
+                .sdcardRootPath(sdDir.toString())
+                .appFolderName("map")
+                .appId("25677896")
+                .appKey("MdDVNTMa8UkXEeNB6a8evHLOPwBdjCHW")
+                .secretKey("cwLrQSgeWOzyyWkQr5c8m8Hr7RZznhx9")
+                .build();
+        BaiduNaviManagerFactory.getTTSManager().initTTS(builder);
+
+        // 注册同步内置tts状态回调
+        BaiduNaviManagerFactory.getTTSManager().setOnTTSStateChangedListener(
+                new IBNTTSManager.IOnTTSPlayStateChangedListener() {
+                    @Override
+                    public void onPlayStart() {
+
+                    }
+
+                    @Override
+                    public void onPlayEnd(String speechId) {
+
+                    }
+
+                    @Override
+                    public void onPlayError(int code, String message) {
+
+                    }
+                }
+        );
     }
 
     /**
@@ -517,9 +550,9 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
 
             nodeIndex = -1;
             route = result.getRouteLines().get(0);
-            distance = route.getDistance();
+//            distance = route.getDistance();
 
-            WalkingRouteOverlay overlay = new MyWalkingRouteOverlay(mBaiduMap);
+            WalkingRouteOverlay overlay = new WalkingRouteOverlay(mBaiduMap);
             routeOverlay = overlay;
             mBaiduMap.setOnMarkerClickListener(overlay);
             overlay.setData(result.getRouteLines().get(0));
@@ -551,8 +584,9 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
 
             nodeIndex = -1;
             route = result.getRouteLines().get(0);
-            distance = route.getDistance();
-            TransitRouteOverlay overlay = new MyTransitRouteOverlay(mBaiduMap);
+//            distance = route.getDistance();
+            //创建TransitRouteOverlay实例
+            TransitRouteOverlay overlay = new TransitRouteOverlay(mBaiduMap);
             mBaiduMap.setOnMarkerClickListener(overlay);
             routeOverlay = overlay;
             // 设置路线数据
@@ -589,8 +623,8 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
 
             nodeIndex = -1;
             route = result.getRouteLines().get(0);
-            distance = route.getDistance();
-            DrivingRouteOverlay overlay = new MyDrivingRouteOverlay(mBaiduMap);
+//            distance = route.getDistance();
+            DrivingRouteOverlay overlay = new DrivingRouteOverlay(mBaiduMap);
             routeOverlay = overlay;
             mBaiduMap.setOnMarkerClickListener(overlay);
             overlay.setData(result.getRouteLines().get(0));
@@ -627,8 +661,8 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
 
             nodeIndex = -1;
             route = result.getRouteLines().get(0);
-            distance = route.getDistance();
-            BikingRouteOverlay overlay = new MyBikingRouteOverlay(mBaiduMap);
+//            distance = route.getDistance();
+            BikingRouteOverlay overlay = new BikingRouteOverlay(mBaiduMap);
             routeOverlay = overlay;
             mBaiduMap.setOnMarkerClickListener(overlay);
             overlay.setData(result.getRouteLines().get(0));
@@ -653,9 +687,9 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 //没有检索到结果
                 return;
             } else {
-                double latitude = geoCodeResult.getLocation().latitude;
-                double longitude = geoCodeResult.getLocation().longitude;
-                endPt = new LatLng(latitude, longitude);
+                latitude = geoCodeResult.getLocation().latitude;
+                longitude = geoCodeResult.getLocation().longitude;
+
             }
         }
     }
@@ -671,105 +705,10 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
         }
     }
 
-
-    // 定制RouteOverly
-    private class MyDrivingRouteOverlay extends DrivingRouteOverlay {
-
-        public MyDrivingRouteOverlay(BaiduMap baiduMap) {
-            super(baiduMap);
-        }
-
-        @Override
-        public BitmapDescriptor getStartMarker() {
-            if (useDefaultIcon) {
-                return BitmapDescriptorFactory.fromResource(R.drawable.icon_st);
-            }
-            return null;
-        }
-
-        @Override
-        public BitmapDescriptor getTerminalMarker() {
-            if (useDefaultIcon) {
-                return BitmapDescriptorFactory.fromResource(R.drawable.icon_en);
-            }
-            return null;
-        }
-    }
-
-    private class MyWalkingRouteOverlay extends WalkingRouteOverlay {
-
-        public MyWalkingRouteOverlay(BaiduMap baiduMap) {
-            super(baiduMap);
-        }
-
-        @Override
-        public BitmapDescriptor getStartMarker() {
-            if (useDefaultIcon) {
-                return BitmapDescriptorFactory.fromResource(R.drawable.icon_st);
-            }
-            return null;
-        }
-
-        @Override
-        public BitmapDescriptor getTerminalMarker() {
-            if (useDefaultIcon) {
-                return BitmapDescriptorFactory.fromResource(R.drawable.icon_en);
-            }
-            return null;
-        }
-    }
-
-    private class MyTransitRouteOverlay extends TransitRouteOverlay {
-
-        public MyTransitRouteOverlay(BaiduMap baiduMap) {
-            super(baiduMap);
-        }
-
-        @Override
-        public BitmapDescriptor getStartMarker() {
-            if (useDefaultIcon) {
-                return BitmapDescriptorFactory.fromResource(R.drawable.icon_st);
-            }
-            return null;
-        }
-
-        @Override
-        public BitmapDescriptor getTerminalMarker() {
-            if (useDefaultIcon) {
-                return BitmapDescriptorFactory.fromResource(R.drawable.icon_en);
-            }
-            return null;
-        }
-    }
-
-    private class MyBikingRouteOverlay extends BikingRouteOverlay {
-        public MyBikingRouteOverlay(BaiduMap baiduMap) {
-            super(baiduMap);
-        }
-
-        @Override
-        public BitmapDescriptor getStartMarker() {
-            if (useDefaultIcon) {
-                return BitmapDescriptorFactory.fromResource(R.drawable.icon_st);
-            }
-            return null;
-        }
-
-        @Override
-        public BitmapDescriptor getTerminalMarker() {
-            if (useDefaultIcon) {
-                return BitmapDescriptorFactory.fromResource(R.drawable.icon_en);
-            }
-            return null;
-        }
-
-    }
-
-
     @Override
     public void onMapClick(LatLng point) {
         mBaiduMap.hideInfoWindow();
-        if(my_login.getVisibility() == View.VISIBLE){
+        if (my_login.getVisibility() == View.VISIBLE) {
             my_login.setVisibility(View.GONE);
             my_back.setVisibility(View.VISIBLE);
         }
@@ -781,7 +720,8 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
         endPt = point;
         mBaiduMap.clear();
         mydraw(endPt, R.drawable.icon_en);
-
+        latitude = point.latitude;
+        longitude = point.longitude;
         // 设置反地理经纬度坐标,请求位置时,需要一个经纬度
         geoCoder.reverseGeoCode(new ReverseGeoCodeOption()
                 .location(point)
@@ -800,6 +740,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
         hideclickLayout(true);
         end_edit.setText(poi.getName());
         endlocation.setText(poi.getName());
+        //geoCoder.geocode(new GeoCodeOption().city(localcity).address(poi.getName()));
         endPt = poi.getPosition();
         mBaiduMap.clear();
         mydraw(poi.getPosition(), R.drawable.icon_en);
@@ -1012,25 +953,33 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 }
                 break;
             case R.id.navigation:
+                geoCoder.geocode(new GeoCodeOption()
+                        .city(localcity)
+                        .address(end_edit.getText().toString()));
+
                 if (isDriver) {
                     //驾车导航
                     startDriverNavi();
                     isDriver = false;
                 } else if (isBike) {
                     //骑行导航
-                    geoCoder.geocode(new GeoCodeOption()
-                            .city(localcity)
-                            .address(end_edit.getText().toString()));
-                    bikeParam = new BikeNaviLaunchParam().stPt(currentPt).endPt(endPt).vehicle(0);
+                    endPt = new LatLng(latitude, longitude);
+                    BikeRouteNodeInfo bikeStartNode = new BikeRouteNodeInfo();
+                    bikeStartNode.setLocation(currentPt);
+                    BikeRouteNodeInfo bikeEndNode = new BikeRouteNodeInfo();
+                    bikeEndNode.setLocation(endPt);
+                    bikeParam = new BikeNaviLaunchParam().startNodeInfo(bikeStartNode).endNodeInfo(bikeEndNode);
+//                    bikeParam = new BikeNaviLaunchParam().stPt(currentPt).endPt(endPt).vehicle(0);
                     startBikeNavi();
                     isBike = false;
                 } else if (isWalk) {
                     //步行导航
-                    geoCoder.geocode(new GeoCodeOption()
-                            .city(localcity)
-                            .address(end_edit.getText().toString()));
-                    walkParam = new WalkNaviLaunchParam().stPt(currentPt).endPt(endPt);
-                    walkParam.extraNaviMode(0);
+                    endPt = new LatLng(latitude, longitude);
+                    WalkRouteNodeInfo walkStartNode = new WalkRouteNodeInfo();
+                    walkStartNode.setLocation(currentPt);
+                    WalkRouteNodeInfo walkEndNode = new WalkRouteNodeInfo();
+                    walkEndNode.setLocation(endPt);
+                    walkParam = new WalkNaviLaunchParam().startNodeInfo(walkStartNode).endNodeInfo(walkEndNode);
                     startWalkNavi();
                     isWalk = false;
                 }
@@ -1154,8 +1103,8 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
         my_back = findViewById(R.id.my_back);
         my_back.setOnClickListener(this);
 
-        needDistance = findViewById(R.id.distance);
-        needTime = findViewById(R.id.need_time);
+//        needDistance = findViewById(R.id.distance);
+//        needTime = findViewById(R.id.need_time);
 
         //起点终点
         start_edit = findViewById(R.id.start);
@@ -1269,43 +1218,43 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
 
     }
 
-    private void initTTs() {
-        File sdDir = null;
-        boolean sdCardExist = Environment.getExternalStorageState()
-                .equals(android.os.Environment.MEDIA_MOUNTED);//判断sd卡是否存在
-        if (sdCardExist) {
-            sdDir = Environment.getExternalStorageDirectory();//获取跟目录
-        }
-        BNTTsInitConfig  builder = new BNTTsInitConfig.Builder()
-                .context(getApplicationContext())
-                .sdcardRootPath(sdDir.toString())
-                .appFolderName("map")
-                .appId("25677896")
-                .appKey("MdDVNTMa8UkXEeNB6a8evHLOPwBdjCHW")
-                .secretKey("cwLrQSgeWOzyyWkQr5c8m8Hr7RZznhx9")
-                .build();
-        BaiduNaviManagerFactory.getTTSManager().initTTS(builder);
-
-        // 注册同步内置tts状态回调
-        BaiduNaviManagerFactory.getTTSManager().setOnTTSStateChangedListener(
-                new IBNTTSManager.IOnTTSPlayStateChangedListener() {
-                    @Override
-                    public void onPlayStart() {
-
-                    }
-
-                    @Override
-                    public void onPlayEnd(String speechId) {
-
-                    }
-
-                    @Override
-                    public void onPlayError(int code, String message) {
-
-                    }
-                }
-        );
-    }
+//    private void initTTs() {
+//        File sdDir = null;
+//        boolean sdCardExist = Environment.getExternalStorageState()
+//                .equals(android.os.Environment.MEDIA_MOUNTED);//判断sd卡是否存在
+//        if (sdCardExist) {
+//            sdDir = Environment.getExternalStorageDirectory();//获取跟目录
+//        }
+//        BNTTsInitConfig  builder = new BNTTsInitConfig.Builder()
+//                .context(getApplicationContext())
+//                .sdcardRootPath(sdDir.toString())
+//                .appFolderName("map")
+//                .appId("25677896")
+//                .appKey("MdDVNTMa8UkXEeNB6a8evHLOPwBdjCHW")
+//                .secretKey("cwLrQSgeWOzyyWkQr5c8m8Hr7RZznhx9")
+//                .build();
+//        BaiduNaviManagerFactory.getTTSManager().initTTS(builder);
+//
+//        // 注册同步内置tts状态回调
+//        BaiduNaviManagerFactory.getTTSManager().setOnTTSStateChangedListener(
+//                new IBNTTSManager.IOnTTSPlayStateChangedListener() {
+//                    @Override
+//                    public void onPlayStart() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onPlayEnd(String speechId) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onPlayError(int code, String message) {
+//
+//                    }
+//                }
+//        );
+//    }
 
     //菜单
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -1366,17 +1315,18 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
      * 开始驾车导航
      */
     private void startDriverNavi() {
+
         BNRoutePlanNode sNode = new BNRoutePlanNode.Builder()
-                .latitude(40.05087)
-                .longitude(116.30142)
-                .name("百度大厦")
-                .description("百度大厦")
+                .latitude(currentPt.latitude)
+                .longitude(currentPt.longitude)
+                .name(start_edit.getText().toString())
+                .description(start_edit.getText().toString())
                 .build();
         BNRoutePlanNode eNode = new BNRoutePlanNode.Builder()
-                .latitude(39.90882)
-                .longitude(116.39750)
-                .name("北京天安门")
-                .description("北京天安门")
+                .latitude(latitude)
+                .longitude(longitude)
+                .name(end_edit.getText().toString())
+                .description(end_edit.getText().toString())
                 .build();
         List<BNRoutePlanNode> list = new ArrayList<>();
         list.add(sNode);
@@ -1396,7 +1346,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                             case IBNRoutePlanManager.MSG_NAVI_ROUTE_PLAN_SUCCESS:
                                 Toast.makeText(MainActivity.this.getApplicationContext(),
                                         "算路成功", Toast.LENGTH_SHORT).show();
-                               break;
+                                break;
                             case IBNRoutePlanManager.MSG_NAVI_ROUTE_PLAN_FAILED:
                                 Toast.makeText(MainActivity.this.getApplicationContext(),
                                         "算路失败", Toast.LENGTH_SHORT).show();
@@ -1442,7 +1392,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
      */
     private void startWalkNavi() {
         //Log.d(TAG, "startWalkNavi");
-        WalkNavigateHelper.getInstance().initNaviEngine(MainActivity.this, new IWEngineInitListener() {
+        WalkNavigateHelper.getInstance().initNaviEngine(this, new IWEngineInitListener() {
             @Override
             public void engineInitSuccess() {
                 //  Log.d(TAG, "WalkNavi engineInitSuccess");

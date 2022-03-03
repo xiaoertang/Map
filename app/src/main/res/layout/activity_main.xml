@@ -296,28 +296,13 @@
                 android:background="@drawable/rectangle_radius_fen"
                 android:orientation="vertical"
                 android:visibility="gone" >
-                <TextView
-                    android:id="@+id/distance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="left"
-                    android:text="距离:"
-                    android:textSize="20sp"/>
-                <TextView
-                    android:id="@+id/need_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="left"
-                    android:text="大约需要时间:"
-                    android:textSize="20sp"/>
                 <Button
                     android:id="@+id/navigation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center"
                     android:background="@drawable/findroute_select"
-                    android:text="导航"
+                    android:text="开始导航"
                     android:textColor="#F2F2F2"
                     android:textSize="12sp" />
             </LinearLayout>
