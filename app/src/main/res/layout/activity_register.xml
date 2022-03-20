@@ -12,7 +12,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="136dp"
         android:gravity="center"
-        android:text="Regist"
+        android:text="Register"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"

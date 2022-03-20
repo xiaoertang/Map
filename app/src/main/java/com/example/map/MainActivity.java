@@ -20,7 +20,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -138,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
     private BikeNaviLaunchParam bikeParam;
     private WalkNaviLaunchParam walkParam;
     private static boolean isPermissionRequested = false;
-
+    private boolean isPOIClick = false;
     private double latitude = 0.0;
     private double longitude = 0.0;
     private SensorManager mSensorManager;
@@ -234,19 +233,21 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
 
     private BroadcastReceiver mReceiver;
     private int mPageType = BNDemoUtils.NORMAL;
+    //骑行、步行起点终点
+    PlanNode startPlanNode = null;
+    PlanNode endPlanNode = null;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 在使用SDK各组件之前初始化context信息，传入ApplicationContext
         // 注意该方法要再setContentView方法之前实现
         SDKInitializer.initialize(getApplicationContext());
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);// 设置标题栏不可用
+        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);// 设置标题栏不可用
         setContentView(R.layout.activity_main);
 
         //设置主页导航栏
         toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
-
         // 地图初始化
         mMapView = (TextureMapView) findViewById(R.id.mTexturemap);
         mBaiduMap = mMapView.getMap();
@@ -306,9 +307,6 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
         //setTitle(titleLable);
         // 地图点击事件处理
         mBaiduMap.setOnMapClickListener(this);
-        // 初始化搜索模块，注册事件监听
-        mSearch = RoutePlanSearch.newInstance();
-        mSearch.setOnGetRoutePlanResultListener(this);
         // 点击地图获取点的坐标
         mBaiduMap.setOnMapClickListener(this);
         //导航初始化
@@ -403,16 +401,17 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
         TextView walk = findViewById(R.id.go_walk);
         // 重置浏览节点的路线数据
         route = null;
-        mBaiduMap.clear();
-        // 设置起终点信息，对于tranist search 来说，城市名无意义
-        PlanNode stNode = PlanNode.withCityNameAndPlaceName(localcity, start_edit.getText().toString().trim());
-        PlanNode enNode = PlanNode.withCityNameAndPlaceName(localcity, end_edit.getText().toString().trim());
-
         // 清除之前的覆盖物
         mBaiduMap.clear();
+        // 设置起终点信息，对于tranist search 来说，城市名无意义
+        geoCoder.geocode(new GeoCodeOption().city(localcity).address(end_edit.getText().toString()));
+        startPlanNode = PlanNode.withLocation(currentPt);
+        endPlanNode = PlanNode.withLocation(new LatLng(latitude, longitude));
         // 实际使用中请对起点终点城市进行正确的设定
         switch (v.getId()) {
             case R.id.go_driver:
+                PlanNode stNode = PlanNode.withCityNameAndPlaceName(localcity,start_edit.getText().toString());
+                PlanNode enNode = PlanNode.withCityNameAndPlaceName(localcity,end_edit.getText().toString());
                 isDriver = true;
                 bus.setSelected(false);
                 bike.setSelected(false);
@@ -429,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 bike.setSelected(false);
                 walk.setSelected(false);
                 driver.setSelected(false);
-                mSearch.transitSearch((new TransitRoutePlanOption()).from(stNode).city(localcity).to(enNode));
+                mSearch.transitSearch((new TransitRoutePlanOption()).from(startPlanNode).city(localcity).to(endPlanNode));
                 hideguide();
                 my_back.setVisibility(View.VISIBLE);
                 my_login.setVisibility(View.GONE);
@@ -440,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 bike.setSelected(true);
                 walk.setSelected(false);
                 driver.setSelected(false);
-                mSearch.bikingSearch((new BikingRoutePlanOption()).from(stNode).to(enNode).ridingType(1));
+                mSearch.bikingSearch((new BikingRoutePlanOption()).from(startPlanNode).to(endPlanNode).ridingType(0));
                 hideguide();
                 my_back.setVisibility(View.VISIBLE);
                 my_login.setVisibility(View.GONE);
@@ -452,7 +451,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 bike.setSelected(false);
                 walk.setSelected(true);
                 driver.setSelected(false);
-                mSearch.walkingSearch((new WalkingRoutePlanOption().from(stNode)).to(enNode));
+                mSearch.walkingSearch((new WalkingRoutePlanOption().from(startPlanNode)).to(endPlanNode));
                 hideguide();
                 showDetailed();
                 my_login.setVisibility(View.GONE);
@@ -466,8 +465,8 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 walk.setSelected(true);
                 driver.setSelected(false);
 //                endPt = new LatLng(latitude,longitude);
-                PlanNode startPlanNode = PlanNode.withLocation(currentPt); // lat long
-                PlanNode endPlanNode = PlanNode.withLocation(endPt);
+                startPlanNode = PlanNode.withLocation(currentPt); // lat long
+                endPlanNode = PlanNode.withLocation(endPt);
                 mSearch.walkingSearch(new WalkingRoutePlanOption().from(startPlanNode).to(endPlanNode));
 //
                 showDetailed();
@@ -480,8 +479,11 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 choosemode.setVisibility(View.VISIBLE);
                 //hideDetailed();
                 break;
+            default:
+                break;
         }
-
+        endPlanNode = null;
+        startPlanNode = null;
     }
 
     private void initTTs() {
@@ -651,6 +653,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
     // 骑行
     @Override
     public void onGetBikingRouteResult(BikingRouteResult result) {
+        BikingRouteOverlay overlay = new BikingRouteOverlay(mBaiduMap);
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
             MyToast("抱歉，未找到结果");
             hideall();
@@ -661,8 +664,6 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
 
             nodeIndex = -1;
             route = result.getRouteLines().get(0);
-//            distance = route.getDistance();
-            BikingRouteOverlay overlay = new BikingRouteOverlay(mBaiduMap);
             routeOverlay = overlay;
             mBaiduMap.setOnMarkerClickListener(overlay);
             overlay.setData(result.getRouteLines().get(0));
@@ -733,6 +734,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
 
     @Override
     public void onMapPoiClick(MapPoi poi) {
+        isPOIClick = true;
         if (locationLayout.getVisibility() == View.VISIBLE) {
             locationLayout.setVisibility(View.GONE);
             locationLayout.startAnimation(slide_out_bottom);
@@ -796,7 +798,8 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                 MapStatus.Builder builder = new MapStatus.Builder();
                 builder.target(currentPt).zoom(17.5f);
                 mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
-                start_edit.setText(startLocation);
+                int len = startLocation.length();
+                start_edit.setText(startLocation.substring(1, len - 2));
                 MyToast("当前所在位置：" + locationDescribe);
                 mylocation.setText(locationDescribe);
                 localcity = location.getCity();
@@ -968,20 +971,28 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
                     bikeStartNode.setLocation(currentPt);
                     BikeRouteNodeInfo bikeEndNode = new BikeRouteNodeInfo();
                     bikeEndNode.setLocation(endPt);
-                    bikeParam = new BikeNaviLaunchParam().startNodeInfo(bikeStartNode).endNodeInfo(bikeEndNode);
+                    bikeParam = new BikeNaviLaunchParam().stPt(currentPt).endPt(endPt).vehicle(0);
 //                    bikeParam = new BikeNaviLaunchParam().stPt(currentPt).endPt(endPt).vehicle(0);
                     startBikeNavi();
                     isBike = false;
                 } else if (isWalk) {
                     //步行导航
-                    endPt = new LatLng(latitude, longitude);
+                    if (isPOIClick) {
+                        geoCoder.geocode(new GeoCodeOption()
+                                .city(customer_city.toString())
+                                .address(end_edit.getText().toString()));
+                        isPOIClick = false;
+                    } else {
+                        endPt = new LatLng(latitude, longitude);
+                    }
                     WalkRouteNodeInfo walkStartNode = new WalkRouteNodeInfo();
                     walkStartNode.setLocation(currentPt);
                     WalkRouteNodeInfo walkEndNode = new WalkRouteNodeInfo();
                     walkEndNode.setLocation(endPt);
-                    walkParam = new WalkNaviLaunchParam().startNodeInfo(walkStartNode).endNodeInfo(walkEndNode);
+                    walkParam = new WalkNaviLaunchParam().stPt(currentPt).endPt(endPt);
                     startWalkNavi();
                     isWalk = false;
+
                 }
                 break;
         }
@@ -1376,6 +1387,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
             @Override
             public void engineInitSuccess() {
                 //Log.d(TAG, "BikeNavi engineInitSuccess");
+                MyToast("骑行导航");
                 routePlanWithBikeParam();
             }
 
@@ -1449,7 +1461,7 @@ public class MainActivity extends AppCompatActivity implements OnMapClickListene
             public void onRoutePlanSuccess() {
 
                 //    Log.d(TAG, "onRoutePlanSuccess");
-
+                MyToast("步行——————————");
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, WNaviGuideActivity.class);
                 startActivity(intent);
